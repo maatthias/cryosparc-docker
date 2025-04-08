@@ -21,6 +21,23 @@ You can change the version to be installed via environment variables, eg to inst
 CRYOSPARC_VERSION=4.4.0 CRYOSPARC_PATCH=231114 make build
 ```
 
+Testing for LBMS
+===
+
+```sh
+# build image from Dockerfile for cryosparc v. 
+export CRYOSPARC_LICENSE_ID=""
+make license
+docker run --detach \
+    --name cryosparc \
+    -e CRYOSPARC_LICENSE_ID=${CRYOSPARC_LICENSE_ID}
+    -e EXTERNAL_UID=1000 \
+    -v /tmp/mongodb/db:/var/lib/mongo/db \
+    -v /tmp/cryosparc/u:/u \
+    -v /tmp/cryosparc/exp:/exp \
+    -p 39000:39000 -p 39001:39001 -p 39002:39002 -p 39003:39003 -p 39004:39004 \
+    slaclab/cryosparc-docker:4.3.1-0
+```
 
 Developer
 ===

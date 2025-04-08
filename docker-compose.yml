@@ -1,0 +1,26 @@
+services:
+
+  cryosparc:
+    image: slaclab/cryosparc-docker:4.3.1-0
+    container_name: cryosparc
+    # volumes:
+      # - ./entrypoint.bash:/entrypoint.bash
+      # - ./cryosparc.sh:/cryosparc.sh
+    #   - /tmp/mongodb/db:/var/lib/mongo/db
+    #   - /tmp/cryosparc/u:/u
+    #   - /tmp/cryosparc/exp:/exp
+    environment:
+      - CRYOSPARC_LICENSE_ID=${CRYOSPARC_LICENSE_ID}
+      # - JUPYTERHUB_USER=ytl
+      # - EXTERNAL_GROUPS=sf:1051,cryo-data:3591,bd:1124
+      # - HOMEDIRS=/home
+      # - JUPYTERHUB_SERVICE_PREFIX=/user/ytl/
+      # - EXTERNAL_UID=1000
+      # - EXTERNAL_GROUPS=msnyder:1000
+      # - USERNAME=msnyder
+    ports:
+      - 39000:39000
+      - 39001:39001
+      - 39002:39002
+      - 39003:39003
+      - 39004:39004

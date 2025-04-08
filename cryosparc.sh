@@ -51,7 +51,8 @@ echo '====='
 
 # envs
 THIS_USER=$(whoami)
-THIS_USER_SUFFIX=${USER_SUFFIX:-'slac.stanford.edu'}
+# THIS_USER_SUFFIX=${USER_SUFFIX:-'slac.stanford.edu'}
+THIS_USER_SUFFIX=${USER_SUFFIX:-'bnl.gov'}
 ACCOUNT="${THIS_USER}@${THIS_USER_SUFFIX}"
 rm -f "${SOCK_FILE}" || true
 cryosparcm restart
