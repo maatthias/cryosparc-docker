@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:experimental
 FROM nvidia/cuda:11.4.3-devel-ubuntu20.04
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # munge and slurm stuff
 ARG MUNGEUSER=16952
@@ -46,7 +46,7 @@ RUN groupmod -o -g $MUNGEGROUP munge \
     && usermod -c "MUNGE Uid 'N' Gid Emporium" -d /var/lib/munge -u $MUNGEUSER -g munge  -s /sbin/nologin munge \
     && chown -R munge:$MUNGEGROUP /etc/munge 
 
-ENV CRYOSPARC_ROOT_DIR /app
+ENV CRYOSPARC_ROOT_DIR=/app
 RUN mkdir -p ${CRYOSPARC_ROOT_DIR}
 WORKDIR ${CRYOSPARC_ROOT_DIR}
 
@@ -54,7 +54,7 @@ ARG CRYOSPARC_VERSION
 ENV CRYOSPARC_VERSION=${CRYOSPARC_VERSION}
 
 # install master
-ENV CRYOSPARC_MASTER_DIR ${CRYOSPARC_ROOT_DIR}/cryosparc_master
+ENV CRYOSPARC_MASTER_DIR=${CRYOSPARC_ROOT_DIR}/cryosparc_master
 RUN --mount=type=secret,id=cryosparc_license_id \
   curl -L https://get.cryosparc.com/download/master-v${CRYOSPARC_VERSION}/$(cat /run/secrets/cryosparc_license_id) | tar -xz \
 	&& cd ${CRYOSPARC_MASTER_DIR} \
@@ -126,4 +126,4 @@ EXPOSE 39003
 EXPOSE 39004
 EXPOSE 39006
 
-ENTRYPOINT /entrypoint.bash
+ENTRYPOINT ["/entrypoint.bash"]
