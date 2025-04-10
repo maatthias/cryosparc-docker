@@ -51,15 +51,20 @@ echo '====='
 
 # envs
 THIS_USER=$(whoami)
-THIS_USER_SUFFIX=${USER_SUFFIX:-'slac.stanford.edu'}
+# THIS_USER_SUFFIX=${USER_SUFFIX:-'slac.stanford.edu'}
+THIS_USER_SUFFIX=${USER_SUFFIX:-'bnl.gov'}
 ACCOUNT="${THIS_USER}@${THIS_USER_SUFFIX}"
 rm -f "${SOCK_FILE}" || true
+cryosparcm start database
+cryosparcm fixdbport
 cryosparcm restart
 
 # ensure that the mongo replset is correct
 MONGO_PORT=$(( $CRYOSPARC_BASE_PORT + 1 ))
 export CRYOSPARC_MONGO_EXTRA_FLAGS="  --unixSocketPrefix ${LSCRATCH}"
+${CRYOSPARC_MASTER_DIR}/bin/cryosparcm start database
 ${CRYOSPARC_MASTER_DIR}/bin/cryosparcm fixdbport
+${CRYOSPARC_MASTER_DIR}/bin/cryosparcm restart
 
 # creat cryosparc local accounts
 create_account() {
@@ -78,6 +83,8 @@ if [ -e "/init.d/accounts" ]; then
 fi
 
 # need to restart to get login prompt
+cryosparcm start database
+cryosparcm fixdbport
 cryosparcm restart
 
 echo "Success starting cryosparc master!"
@@ -126,8 +133,8 @@ fi
 ###
 # create firefox startup
 ###
-export CRYOSPARC_BASE_PORT=$(cat $HOME/cryosparc/config.sh | awk '/CRYOSPARC_BASE_PORT/{ split($2,a,"="); print a[2] }')
-echo "/usr/bin/firefox http://localhost:${CRYOSPARC_BASE_PORT}" > ${LSCRATCH}/cryosparc_launcher.sh
-cp /cryosparc.desktop ${HOME}/Desktop/cryosparc.desktop 
-chmod +x ${HOME}/Desktop/cryosparc.desktop
-ln -sfn ${LSCRATCH}/cryosparc_launcher.sh "${HOME}/Desktop/cryosparc_launcher.sh"
+# export CRYOSPARC_BASE_PORT=$(cat $HOME/cryosparc/config.sh | awk '/CRYOSPARC_BASE_PORT/{ split($2,a,"="); print a[2] }')
+# echo "/usr/bin/firefox http://localhost:${CRYOSPARC_BASE_PORT}" > ${LSCRATCH}/cryosparc_launcher.sh
+# cp /cryosparc.desktop ${HOME}/Desktop/cryosparc.desktop 
+# chmod +x ${HOME}/Desktop/cryosparc.desktop
+# ln -sfn ${LSCRATCH}/cryosparc_launcher.sh "${HOME}/Desktop/cryosparc_launcher.sh"

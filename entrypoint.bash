@@ -44,10 +44,13 @@ function make_user() {
         mkdir -p ${USER_HOMEDIR} 
         makedir=1
     fi
-    echo adduser ${U_NAME} --disabled-password --home ${USER_HOMEDIR} -N --ingroup ${gid} --uid ${nuid} \
-       --shell ${DEFAULT_SHELL} --gecos "User"
-    adduser ${U_NAME} --disabled-password --home ${USER_HOMEDIR} -N --ingroup ${gid} --uid ${nuid} \
-       --shell ${DEFAULT_SHELL} --gecos "User"
+    # echo adduser ${U_NAME} --disabled-password --home ${USER_HOMEDIR} -N --ingroup ${gid} --uid ${nuid} \
+    #    --shell ${DEFAULT_SHELL} --gecos "User"
+    # adduser ${U_NAME} --disabled-password --home ${USER_HOMEDIR} -N --ingroup ${gid} --uid ${nuid} \
+    #    --shell ${DEFAULT_SHELL} --gecos "User"
+    # useradd for rocky linux
+    useradd ${U_NAME} --home-dir ${USER_HOMEDIR} -N --gid ${gid} --uid ${nuid} \
+       --shell ${DEFAULT_SHELL}
     for g in "${supgrp[@]}"; do
         echo adduser ${U_NAME} $g
         adduser ${U_NAME} $g
