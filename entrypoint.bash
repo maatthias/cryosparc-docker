@@ -131,7 +131,7 @@ function purge_docker_vars() {
     unset ${purge}
 }
 
-
+echo "\$USERNAME = ${USERNAME}"
 U_NAME="${USERNAME}"
 HOMEDIRS=${HOMEDIRS:="/home"}
 export USER_HOMEDIR="${HOMEDIRS}/${U_NAME}"
