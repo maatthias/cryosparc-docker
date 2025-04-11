@@ -66,7 +66,7 @@ RUN tar -xzf cryosparc_worker.tar.gz
 
 RUN mkdir -p /scratch/cryosparc_cache
 RUN useradd -ms /bin/bash cryosparc
-USER cryosparc
+# USER cryosparc
 
 ENV USER=cryosparc
 RUN cd ${CRYOSPARC_MASTER_DIR} && \
