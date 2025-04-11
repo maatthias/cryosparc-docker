@@ -83,7 +83,7 @@ RUN cd ${CRYOSPARC_MASTER_DIR} && \
 
 # USER root
 COPY entrypoint.bash /entrypoint.bash
-
+COPY cryosparc.sh /cryosparc.sh
 # ADD slurm /app/slurm
 
 EXPOSE 39000 39001 39002 39003 39004 39006
