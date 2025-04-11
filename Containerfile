@@ -65,8 +65,8 @@ RUN mkdir -p /scratch/cryosparc_cache
 RUN useradd -ms /bin/bash cryosparc
 # USER cryosparc
 
-RUN echo -e "[mongodb-org-8.0]\nname=MongoDB Repository\nbaseurl=https://repo.mongodb.org/yum/redhat/9/mongodb-org/8.0/x86_64/\ngpgcheck=1\nenabled=1\ngpgkey=https://pgp.mongodb.com/server-8.0.asc" > /etc/yum.repos.d/mongodb-org-8.0.repo \
-  && dnf -y install mongodb-org
+# RUN echo -e "[mongodb-org-8.0]\nname=MongoDB Repository\nbaseurl=https://repo.mongodb.org/yum/redhat/9/mongodb-org/8.0/x86_64/\ngpgcheck=1\nenabled=1\ngpgkey=https://pgp.mongodb.com/server-8.0.asc" > /etc/yum.repos.d/mongodb-org-8.0.repo \
+#   && dnf -y install mongodb-org
 
 ENV USER=cryosparc
 RUN cd ${CRYOSPARC_MASTER_DIR} && \
