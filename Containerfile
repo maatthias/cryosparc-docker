@@ -1,12 +1,11 @@
-FROM nvidia/cuda:12.8.1-devel-rockylinux9
-# FROM rockylinux:9
+# FROM nvidia/cuda:12.8.1-devel-rockylinux9
+FROM rockylinux:9
 
 # exclude upgrading kernel stuff so we don't break nvidia driver
 RUN dnf -y upgrade \
   && dnf install -y epel-release dnf-plugins-core \
-  && dnf config-manager --enable crb
-
-RUN dnf install -y \
+  && dnf config-manager --enable crb \
+  && dnf install -y \
     zip unzip \
     python3 \
     python3-devel \
@@ -18,9 +17,8 @@ RUN dnf install -y \
     openssh-server \
     jq \
     munge \
-    which
-
-RUN dnf clean all
+    which \
+  && dnf clean all
 
 # # install nvidia driver
 # RUN dnf config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel9/$(uname -i)/cuda-rhel9.repo \
