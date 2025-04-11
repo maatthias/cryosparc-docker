@@ -2,7 +2,7 @@
 FROM nvidia/cuda:12.8.1-devel-rockylinux9
 
 # exclude upgrading kernel stuff so we don't break nvidia driver
-RUN dnf -y upgrade --exclude kernel kernel-devel kernel-headers \
+RUN dnf -y upgrade --exclude kernel kernel-devel kernel-headers *cuda* *nvidia* \
   && dnf clean all && \ 
   dnf install -y epel-release dnf-plugins-core
 RUN dnf config-manager --enable crb
