@@ -60,19 +60,18 @@ RUN curl -L https://get.cryosparc.com/download/worker-latest/${LICENSE_ID} -o cr
 RUN tar -xzf cryosparc_worker.tar.gz
 
 # upgrade nvidia driver
-# RUN dnf config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel9/$(uname -i)/cuda-rhel9.repo \
-#   && dnf -y install bzip2 automake pciutils elfutils-libelf-devel libglvnd-opengl libglvnd-glx libglvnd-devel acpid dkms \
-#   && dnf -y module install nvidia-driver:latest-dkms
+RUN dnf config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel9/$(uname -i)/cuda-rhel9.repo \
+  && dnf -y install bzip2 automake pciutils elfutils-libelf-devel libglvnd-opengl libglvnd-glx libglvnd-devel acpid dkms \
+  && dnf -y module install nvidia-driver:latest-dkms
 
 # confirm working in build
-RUN which nvidia-smi \
-  && nvidia-smi
+# RUN nvidia-smi
 
 # RUN useradd -ms /bin/bash cryosparc
 # USER cryosparc
 
 RUN mkdir -p /scratch/cryosparc_cache
-# ENV USER=cryosparc
+ENV USER=cryosparc
 RUN cd ${CRYOSPARC_MASTER_DIR} && \
   ./install.sh --standalone \
     --license $LICENSE_ID \
