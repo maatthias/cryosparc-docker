@@ -39,9 +39,6 @@ RUN dnf -y upgrade \
 #     curl -fsSL https://rpm.nodesource.com/setup_21.x | bash - && \
 #     dnf install -y nodejs
 
-# RUN echo -e "[mongodb-org-8.0]\nname=MongoDB Repository\nbaseurl=https://repo.mongodb.org/yum/redhat/9/mongodb-org/8.0/x86_64/\ngpgcheck=1\nenabled=1\ngpgkey=https://pgp.mongodb.com/server-8.0.asc" > /etc/yum.repos.d/mongodb-org-8.0.repo \
-#   && dnf -y install mongodb-org
-
 # RUN groupmod -o -g $MUNGEGROUP munge && \
 #     usermod -c "MUNGE Uid 'N' Gid Emporium" -d /var/lib/munge -u $MUNGEUSER -g munge -s /sbin/nologin munge && \
 #     chown -R munge:$MUNGEGROUP /etc/munge
@@ -67,6 +64,9 @@ RUN tar -xzf cryosparc_worker.tar.gz
 RUN mkdir -p /scratch/cryosparc_cache
 RUN useradd -ms /bin/bash cryosparc
 # USER cryosparc
+
+RUN echo -e "[mongodb-org-8.0]\nname=MongoDB Repository\nbaseurl=https://repo.mongodb.org/yum/redhat/9/mongodb-org/8.0/x86_64/\ngpgcheck=1\nenabled=1\ngpgkey=https://pgp.mongodb.com/server-8.0.asc" > /etc/yum.repos.d/mongodb-org-8.0.repo \
+  && dnf -y install mongodb-org
 
 ENV USER=cryosparc
 RUN cd ${CRYOSPARC_MASTER_DIR} && \
