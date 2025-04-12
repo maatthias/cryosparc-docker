@@ -50,15 +50,15 @@ WORKDIR ${CRYOSPARC_ROOT_DIR}
 ARG CRYOSPARC_VERSION
 ENV CRYOSPARC_VERSION=${CRYOSPARC_VERSION}
 
-ARG LICENSE_ID
-ENV LICENSE_ID=${LICENSE_ID}
+ARG CRYOSPARC_LICENSE_ID
+ENV CRYOSPARC_LICENSE_ID=${CRYOSPARC_LICENSE_ID}
 
 # install master
 ENV CRYOSPARC_MASTER_DIR=${CRYOSPARC_ROOT_DIR}/cryosparc_master
 
-RUN curl -L https://get.cryosparc.com/download/master-latest/${LICENSE_ID} -o cryosparc_master.tar.gz
+RUN curl -L https://get.cryosparc.com/download/master-latest/${CRYOSPARC_LICENSE_ID} -o cryosparc_master.tar.gz
 RUN tar -xzf cryosparc_master.tar.gz
-RUN curl -L https://get.cryosparc.com/download/worker-latest/${LICENSE_ID} -o cryosparc_worker.tar.gz
+RUN curl -L https://get.cryosparc.com/download/worker-latest/${CRYOSPARC_LICENSE_ID} -o cryosparc_worker.tar.gz
 RUN tar -xzf cryosparc_worker.tar.gz
 
 RUN mkdir -p /scratch/cryosparc_cache
@@ -71,7 +71,7 @@ RUN useradd -ms /bin/bash cryosparc
 ENV USER=cryosparc
 RUN cd ${CRYOSPARC_MASTER_DIR} && \
   ./install.sh --standalone \
-    --license $LICENSE_ID \
+    --license $CRYOSPARC_LICENSE_ID \
     --worker_path /${CRYOSPARC_ROOT_DIR}/cryosparc_worker \
     --ssdpath /scratch/cryosparc_cache \
     --initial_email "msnyder@bnl.gov" \
