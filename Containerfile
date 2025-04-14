@@ -72,7 +72,6 @@ RUN useradd -ms /bin/bash cryosparc
 RUN dnf config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel9/$(uname -i)/cuda-rhel9.repo
 RUN dnf -y install bzip2 make automake gcc gcc-c++ pciutils elfutils-libelf-devel libglvnd-opengl libglvnd-glx libglvnd-devel acpid dkms
 # RUN dnf -y install kernel-headers:$(uname -r) kernel-devel:$(uname -r)
-RUN dnf -y install kernel-headers:4.18.0-553.34.1.el8_10 kernel-devel:4.18.0-553.34.1.el8_10
 RUN dnf -y module install nvidia-driver:open-dkms
 RUN dnf -y module reset nvidia-driver
 RUN dnf -y module enable nvidia-driver:525-open
