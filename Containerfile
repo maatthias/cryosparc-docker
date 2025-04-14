@@ -68,22 +68,32 @@ RUN useradd -ms /bin/bash cryosparc
 # RUN echo -e "[mongodb-org-8.0]\nname=MongoDB Repository\nbaseurl=https://repo.mongodb.org/yum/redhat/9/mongodb-org/8.0/x86_64/\ngpgcheck=1\nenabled=1\ngpgkey=https://pgp.mongodb.com/server-8.0.asc" > /etc/yum.repos.d/mongodb-org-8.0.repo \
 #   && dnf -y install mongodb-org
 
-RUN dnf install -y \
-    nvidia-driver \ 
-    && dnf clean all
+# install nvidia-driver
+RUN dnf config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel9/$(uname -i)/cuda-rhel9.repo
+RUN dnf -y install bzip2 make automake gcc gcc-c++ pciutils elfutils-libelf-devel libglvnd-opengl libglvnd-glx libglvnd-devel acpid dkms
+# RUN dnf -y install kernel-headers:$(uname -r) kernel-devel:$(uname -r)
+RUN dnf -y install kernel-headers:4.18.0-553.34.1.el8_10 kernel-devel:4.18.0-553.34.1.el8_10
+RUN dnf -y module install nvidia-driver:open-dkms
+RUN dnf -y module reset nvidia-driver
+RUN dnf -y module enable nvidia-driver:525-open
+# blacklist nouveau driver
+RUN echo "blacklist nouveau" | tee /etc/modprobe.d/blacklist-nouveau.conf \
+  && echo 'omit_drivers+=" nouveau "' | tee /etc/dracut.conf.d/blacklist-nouveau.conf \
+  && dracut --regenerate-all --force \
+  && depmod -a
 
-ENV USER=cryosparc
-RUN cd ${CRYOSPARC_MASTER_DIR} && \
-  ./install.sh --standalone \
-    --license $CRYOSPARC_LICENSE_ID \
-    --worker_path /${CRYOSPARC_ROOT_DIR}/cryosparc_worker \
-    --ssdpath /scratch/cryosparc_cache \
-    --initial_email "msnyder@bnl.gov" \
-    --initial_password "Password123" \
-    --initial_username "msnyder" \
-    --initial_firstname "Matt" \
-    --initial_lastname "Snyder" \
-    --port 39000
+# ENV USER=cryosparc
+# RUN cd ${CRYOSPARC_MASTER_DIR} && \
+#   ./install.sh --standalone \
+#     --license $CRYOSPARC_LICENSE_ID \
+#     --worker_path /${CRYOSPARC_ROOT_DIR}/cryosparc_worker \
+#     --ssdpath /scratch/cryosparc_cache \
+#     --initial_email "msnyder@bnl.gov" \
+#     --initial_password "Password123" \
+#     --initial_username "msnyder" \
+#     --initial_firstname "Matt" \
+#     --initial_lastname "Snyder" \
+#     --port 39000
 
 # USER root
 COPY entrypoint.bash /entrypoint.bash

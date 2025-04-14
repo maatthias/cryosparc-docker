@@ -13,10 +13,15 @@ dnf install nvidia-container-toolkit
 nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml
 nvidia-ctk cdi list
 podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable rockylinux:9 nvidia-smi -L
+
+# verify with
+nvidia-smi --query-gpu=gpu_name --format=csv,noheader --id=0
+podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable rockylinux:9 nvidia-smi -L
 ```
+
 ### for rhel 8
 #### host preparation
-- To do this in rhel8 is a bit more laborious than rhel 9 since there is no toolkit support (we have to use the runtime)
+- if above verification steps fail in rhel 8 you may need to do some extra steps 
 - first set env var CRYOSPARC_LICENSE_ID={your_license_id}
 - rhel8 requires container runtime hook
 - [redhat article on using rhel 8 to do this with container runtime hook](https://www.redhat.com/en/blog/how-use-gpus-containers-bare-metal-rhel-8) but the basic steps distilled below
@@ -41,13 +46,7 @@ dnf -y module install nvidia-driver:open-dkms
 # Load the NVIDIA and the unified memory kernel modules.
 nvidia-modprobe && nvidia-modprobe -u
 
-# verify with
-nvidia-smi --query-gpu=gpu_name --format=csv,noheader --id=0
-podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable rockylinux:9 nvidia-smi -
 ```
-
-distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
-curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.repo | tee /etc/yum.repos.d/nvidia-docker.repo
 
 ## build image
 
