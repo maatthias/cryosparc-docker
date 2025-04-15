@@ -98,6 +98,7 @@ RUN cd ${CRYOSPARC_MASTER_DIR} && \
 COPY entrypoint.bash /entrypoint.bash
 COPY cryosparc.sh /cryosparc.sh
 COPY start_cryosparc.sh /start_cryosparc.sh
+# RUN chmod +x /start_cryosparc.sh
 COPY config.sh $CRYOSPARC_MASTER_DIR/config.sh
 # ADD slurm /app/slurm
 
@@ -108,4 +109,5 @@ ENV PATH=$PATH:$CRYOSPARC_MASTER_DIR/bin
 # ENTRYPOINT ["/entrypoint.bash"]
 # ENTRYPOINT ["cryosparcm start"]
 ENTRYPOINT ["/start_cryosparc.sh"]
-# CMD ["cryosparcm", "restart"]
+# CMD ["cryosparcm", "configuredb", "&&", "cryosparcm", "restart"]
+# CMD ["nvidia-smi", "-L"]
