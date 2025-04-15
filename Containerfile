@@ -69,36 +69,43 @@ RUN useradd -ms /bin/bash cryosparc
 #   && dnf -y install mongodb-org
 
 # install nvidia-driver
-RUN dnf config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel9/$(uname -i)/cuda-rhel9.repo
-RUN dnf -y install bzip2 make automake gcc gcc-c++ pciutils elfutils-libelf-devel libglvnd-opengl libglvnd-glx libglvnd-devel acpid dkms
+# RUN dnf config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel9/$(uname -i)/cuda-rhel9.repo
+# RUN dnf -y install bzip2 make automake gcc gcc-c++ pciutils elfutils-libelf-devel libglvnd-opengl libglvnd-glx libglvnd-devel acpid dkms
 # RUN dnf -y install kernel-headers:$(uname -r) kernel-devel:$(uname -r)
-RUN dnf -y module install nvidia-driver:open-dkms
-RUN dnf -y module reset nvidia-driver
-RUN dnf -y module enable nvidia-driver:525-open
+# RUN dnf -y module install nvidia-driver:open-dkms
+# RUN dnf -y module reset nvidia-driver
+# RUN dnf -y module enable nvidia-driver:525-open
 # blacklist nouveau driver
-RUN echo "blacklist nouveau" | tee /etc/modprobe.d/blacklist-nouveau.conf \
-  && echo 'omit_drivers+=" nouveau "' | tee /etc/dracut.conf.d/blacklist-nouveau.conf \
-  && dracut --regenerate-all --force \
-  && depmod -a
+# RUN echo "blacklist nouveau" | tee /etc/modprobe.d/blacklist-nouveau.conf \
+#   && echo 'omit_drivers+=" nouveau "' | tee /etc/dracut.conf.d/blacklist-nouveau.conf \
+#   && dracut --regenerate-all --force \
+#   && depmod -a
 
-# ENV USER=cryosparc
-# RUN cd ${CRYOSPARC_MASTER_DIR} && \
-#   ./install.sh --standalone \
-#     --license $CRYOSPARC_LICENSE_ID \
-#     --worker_path /${CRYOSPARC_ROOT_DIR}/cryosparc_worker \
-#     --ssdpath /scratch/cryosparc_cache \
-#     --initial_email "msnyder@bnl.gov" \
-#     --initial_password "Password123" \
-#     --initial_username "msnyder" \
-#     --initial_firstname "Matt" \
-#     --initial_lastname "Snyder" \
-#     --port 39000
+ENV USER=cryosparc
+RUN cd ${CRYOSPARC_MASTER_DIR} && \
+  ./install.sh --standalone \
+    --license $CRYOSPARC_LICENSE_ID \
+    --worker_path /${CRYOSPARC_ROOT_DIR}/cryosparc_worker \
+    --ssdpath /scratch/cryosparc_cache \
+    --initial_email "msnyder@bnl.gov" \
+    --initial_password "Password123" \
+    --initial_username "msnyder" \
+    --initial_firstname "Matt" \
+    --initial_lastname "Snyder" \
+    --port 39000
 
 # USER root
 COPY entrypoint.bash /entrypoint.bash
 COPY cryosparc.sh /cryosparc.sh
+COPY start_cryosparc.sh /start_cryosparc.sh
+COPY config.sh $CRYOSPARC_MASTER_DIR/config.sh
 # ADD slurm /app/slurm
 
 EXPOSE 39000 39001 39002 39003 39004 39006
 
-ENTRYPOINT ["/entrypoint.bash"]
+ENV PATH=$PATH:$CRYOSPARC_MASTER_DIR/bin
+
+# ENTRYPOINT ["/entrypoint.bash"]
+# ENTRYPOINT ["cryosparcm start"]
+ENTRYPOINT ["/start_cryosparc.sh"]
+# CMD ["cryosparcm", "restart"]

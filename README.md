@@ -15,7 +15,7 @@ nvidia-ctk cdi list
 podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable rockylinux:9 nvidia-smi -L
 
 # verify with
-nvidia-smi --query-gpu=gpu_name --format=csv,noheader --id=0
+podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable rockylinux:9 nvidia-smi --query-gpu=gpu_name,driver_version --format=csv,noheader --id=0
 podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable rockylinux:9 nvidia-smi -L
 ```
 
@@ -52,4 +52,6 @@ nvidia-modprobe && nvidia-modprobe -u
 
 ```sh
 podman image build --device nvidia.com/gpu=all --security-opt=label=disable --file Containerfile --tag cryosparc-rockylinux9:latest --build-arg CRYOSPARC_LICENSE_ID={$CRYOSPARC_LICENSE_ID} --network=host
+podman run -e CRYOSPARC_LICENSE_ID=${CRYOSPARC_LICENSE_ID} --name cryosparc --hostname cryosparc -p 39000:39000 -p 39001:39001 -p 39002:39002 -p 39003:39003 -p 39004:39004 localhost/cryosparc-rockylinux9
+
 ```
