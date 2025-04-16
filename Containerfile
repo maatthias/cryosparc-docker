@@ -130,5 +130,5 @@ ENV PATH=$PATH:${CRYOSPARC_MASTER_DIR}/bin
 RUN echo PATH is ${PATH}
 
 
-# ENTRYPOINT ["/start_cryosparc.sh"]
-CMD ["cryosparcm", "start"]
+ENTRYPOINT ["/start_cryosparc.sh"]
+# CMD ["cryosparcm", "start"]
