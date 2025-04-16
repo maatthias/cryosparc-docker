@@ -51,11 +51,17 @@ nvidia-modprobe && nvidia-modprobe -u
 ## build image
 
 ```sh
-podman image build --device nvidia.com/gpu=all --security-opt=label=disable --file Containerfile --tag cryosparc-rockylinux9:latest --build-arg CRYOSPARC_LICENSE_ID={$CRYOSPARC_LICENSE_ID} --network=host
+podman image build --device nvidia.com/gpu=all --security-opt=label=disable --file Containerfile --tag cryosparc-rockylinux9:latest --build-arg CRYOSPARC_LICENSE_ID=$CRYOSPARC_LICENSE_ID --network=host
 podman run --detach --device nvidia.com/gpu=all --security-opt=label=disable --privileged -e CRYOSPARC_LICENSE_ID=${CRYOSPARC_LICENSE_ID} --name cryosparc --hostname cryosparc -p 39000:39000 -p 39001:39001 -p 39002:39002 -p 39003:39003 -p 39004:39004 localhost/cryosparc-rockylinux9
 ```
-- TODO use cryosparc user to install/run
+## todos:
+- use cryosparc user to install/run
 ```sh
 adquery user cryosparc01
 cryosparc01:x:406223:406223: , , , 26455:/nsls2/users/cryosparc01:/bin/false
+```
+- fix implicit dependency on `/etc/cdi/nvidia.yaml`
+```sh
+WARN[0000] Implicit hook directories are deprecated; set --hooks-dir="/usr/share/containers/oci/hooks.d" explicitly to continue to load ociHooks from this directory 
+WARN[0000] Implicit hook directories are deprecated; set --hooks-dir="/etc/containers/oci/hooks.d" explicitly to continue to load ociHooks from this directory 
 ```
