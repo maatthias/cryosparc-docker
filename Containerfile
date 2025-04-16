@@ -81,33 +81,49 @@ RUN useradd -ms /bin/bash cryosparc
 #   && dracut --regenerate-all --force \
 #   && depmod -a
 
+# cryosparc installation needs non-root user
 ENV USER=cryosparc
-RUN cd ${CRYOSPARC_MASTER_DIR} && \
-  ./install.sh --standalone \
+# however allow any user to start service
+ENV CRYOSPARC_FORCE_USER=true
+
+WORKDIR ${CRYOSPARC_MASTER_DIR}
+# --yes option means don't prompt user to answer questions
+RUN ./install.sh \
+    --yes \
+    --standalone \
+    --allowroot \
+    --insecure \
+    --nossd \
+    --disable_db_auth \
+    --hostname "mars8.nsls2.bnl.gov" \
     --license $CRYOSPARC_LICENSE_ID \
     --worker_path /${CRYOSPARC_ROOT_DIR}/cryosparc_worker \
     --ssdpath /scratch/cryosparc_cache \
-    --initial_email "msnyder@bnl.gov" \
+    --initial_email "cryosparc@bnl.gov" \
     --initial_password "Password123" \
-    --initial_username "msnyder" \
-    --initial_firstname "Matt" \
-    --initial_lastname "Snyder" \
+    --initial_username "cryosparc" \
+    --initial_firstname "Cryo" \
+    --initial_lastname "Sparc" \
     --port 39000
 
-# USER root
-COPY entrypoint.bash /entrypoint.bash
-COPY cryosparc.sh /cryosparc.sh
+RUN cat config.sh
+RUN env | sort
+#COPY entrypoint.bash /entrypoint.bash
+#COPY cryosparc.sh /cryosparc.sh
+
 COPY start_cryosparc.sh /start_cryosparc.sh
-# RUN chmod +x /start_cryosparc.sh
-COPY config.sh $CRYOSPARC_MASTER_DIR/config.sh
-# ADD slurm /app/slurm
+RUN chmod 0755 /start_cryosparc.sh
+
+# manually place config.sh to force some settings
+#COPY config.sh $CRYOSPARC_MASTER_DIR/config.sh
 
 EXPOSE 39000 39001 39002 39003 39004 39006
 
-ENV PATH=$PATH:$CRYOSPARC_MASTER_DIR/bin
+ENV PATH=$PATH:${CRYOSPARC_MASTER_DIR}/bin
+RUN echo PATH is ${PATH}
 
-# ENTRYPOINT ["/entrypoint.bash"]
-# ENTRYPOINT ["cryosparcm start"]
-ENTRYPOINT ["/start_cryosparc.sh"]
-# CMD ["cryosparcm", "configuredb", "&&", "cryosparcm", "restart"]
-# CMD ["nvidia-smi", "-L"]
+#ENTRYPOINT ["/entrypoint.bash"]
+#ENTRYPOINT ["/start_cryosparc.sh"]
+CMD ["cryosparcm", "start"]
+#CMD ["cryosparcm", "configuredb", "&&", "cryosparcm", "start"]
+#CMD ["nvidia-smi", "-L"]

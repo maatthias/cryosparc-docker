@@ -23,5 +23,5 @@ export CRYOSPARC_DEVELOP=false
 export CRYOSPARC_CLICK_WRAP=true
 
 # force container to use the hostname of the container
-export CRYOSPARC_FORCE_HOSTNAME=true
+# export CRYOSPARC_FORCE_HOSTNAME=true
 # export CRYOSPARC_HOSTNAME_CHECK=cryosparc
