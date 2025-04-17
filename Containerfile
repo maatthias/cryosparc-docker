@@ -45,20 +45,19 @@ ENV CRYOSPARC_MASTER_HOSTNAME=localhost
 
 RUN cat install.sh
 
-# --yes option means don't prompt user to answer questions
 RUN ./install.sh \
     --yes \
+    --license $CRYOSPARC_LICENSE_ID \
     --standalone \
     --allowroot \
     --insecure \
     --nossd \
     --disable_db_auth \
     --hostname "localhost" \
-    --license $CRYOSPARC_LICENSE_ID \
     --worker_path ${CRYOSPARC_ROOT_DIR}/cryosparc_worker \
     # --ssdpath /scratch/cryosparc_cache \
     --initial_email "cryosparc@bnl.gov" \
-    --initial_password "Password123" \
+    --initial_password $CRYOSPARC_LICENSE_ID \
     --initial_username "cryosparc" \
     --initial_firstname "Cryo" \
     --initial_lastname "Sparc" \
