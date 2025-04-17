@@ -30,7 +30,8 @@ echo '====='
 THIS_USER=$(whoami)
 THIS_USER_SUFFIX=${USER_SUFFIX:-'bnl.gov'}
 ACCOUNT="${THIS_USER}@${THIS_USER_SUFFIX}"
-rm -f "${SOCK_FILE}" || true
+# rm -f "${SOCK_FILE}" || true
+rm -f "${CRYOSPARC_SUPERVISOR_SOCK_FILE}" || true
 
 cryosparcm start database
 cryosparcm fixdbport

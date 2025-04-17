@@ -44,6 +44,7 @@ RUN sed -i '/^echo "# Other" >> config.sh$/a echo \"export CRYOSPARC_HOSTNAME_CH
 ENV CRYOSPARC_MASTER_HOSTNAME=localhost
 
 RUN cat install.sh
+RUN env | sort
 
 RUN ./install.sh \
     --yes \
@@ -63,7 +64,10 @@ RUN ./install.sh \
     --initial_lastname "Sparc" \
     --port 39000
 
+# inspect
+RUN ls -al /tmp/
 RUN cat config.sh
+# RUN ps aux | grep -i cryosparc
 RUN env | sort
 
 COPY start_cryosparc.sh /start_cryosparc.sh
@@ -72,6 +76,10 @@ RUN chmod 0755 /start_cryosparc.sh
 EXPOSE 39000 39001 39002 39003 39004 39006
 
 ENV PATH=$PATH:${CRYOSPARC_MASTER_DIR}/bin
+
+# make socket file deterministic
+RUN root_dir_hash=$(echo -n $CRYOSPARC_ROOT_DIR | md5sum | awk '{print $1}')
+RUN export CRYOSPARC_SUPERVISOR_SOCK_FILE=/tmp/cryosparc-supervisor-${root_dir_hash}.sock
 
 ENTRYPOINT ["/start_cryosparc.sh"]
 # CMD ["cryosparcm", "start"]
