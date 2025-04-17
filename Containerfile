@@ -1,7 +1,6 @@
 # FROM nvidia/cuda:12.8.1-devel-rockylinux9
 FROM rockylinux:9
 
-# exclude upgrading kernel stuff so we don't break nvidia driver
 RUN dnf -y upgrade \
   && dnf install -y epel-release dnf-plugins-core \
   && dnf config-manager --enable crb \
@@ -20,67 +19,20 @@ RUN dnf -y upgrade \
     zip unzip \
   && dnf clean all
 
-# # install nvidia driver
-# RUN dnf config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel9/$(uname -i)/cuda-rhel9.repo \
-#   && dnf -y install bzip2 automake pciutils elfutils-libelf-devel libglvnd-opengl libglvnd-glx libglvnd-devel acpid dkms \
-#   && dnf -y module install nvidia-driver:latest-dkms
-
-# # munge and slurm stuff
-# ARG MUNGEUSER=16952
-# ARG MUNGEGROUP=1034
-# ARG SLURMUSER=16924
-# ARG SLURMGROUP=1034
-# RUN groupadd -f -g $SLURMGROUP slurm && \
-#     useradd -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm -s /bin/bash slurm
-
-# RUN dnf install -y --allowerasing \
-#     ca-certificates \
-#     gnupg2 && \
-#     curl -fsSL https://rpm.nodesource.com/setup_21.x | bash - && \
-#     dnf install -y nodejs
-
-# RUN groupmod -o -g $MUNGEGROUP munge && \
-#     usermod -c "MUNGE Uid 'N' Gid Emporium" -d /var/lib/munge -u $MUNGEUSER -g munge -s /sbin/nologin munge && \
-#     chown -R munge:$MUNGEGROUP /etc/munge
-
 ENV CRYOSPARC_ROOT_DIR=/app
 RUN mkdir -p ${CRYOSPARC_ROOT_DIR}
 WORKDIR ${CRYOSPARC_ROOT_DIR}
 
-ARG CRYOSPARC_VERSION
-ENV CRYOSPARC_VERSION=${CRYOSPARC_VERSION}
-
 ARG CRYOSPARC_LICENSE_ID
 ENV CRYOSPARC_LICENSE_ID=${CRYOSPARC_LICENSE_ID}
 
-# install master
-ENV CRYOSPARC_MASTER_DIR=${CRYOSPARC_ROOT_DIR}/cryosparc_master
-
+# download
 RUN curl -L https://get.cryosparc.com/download/master-latest/${CRYOSPARC_LICENSE_ID} -o cryosparc_master.tar.gz
 RUN tar -xzf cryosparc_master.tar.gz
 RUN curl -L https://get.cryosparc.com/download/worker-latest/${CRYOSPARC_LICENSE_ID} -o cryosparc_worker.tar.gz
 RUN tar -xzf cryosparc_worker.tar.gz
 
-RUN mkdir -p /scratch/cryosparc_cache
-RUN useradd -ms /bin/bash cryosparc
-# USER cryosparc
-
-# RUN echo -e "[mongodb-org-8.0]\nname=MongoDB Repository\nbaseurl=https://repo.mongodb.org/yum/redhat/9/mongodb-org/8.0/x86_64/\ngpgcheck=1\nenabled=1\ngpgkey=https://pgp.mongodb.com/server-8.0.asc" > /etc/yum.repos.d/mongodb-org-8.0.repo \
-#   && dnf -y install mongodb-org
-
-# install nvidia-driver
-# RUN dnf config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel9/$(uname -i)/cuda-rhel9.repo
-# RUN dnf -y install bzip2 make automake gcc gcc-c++ pciutils elfutils-libelf-devel libglvnd-opengl libglvnd-glx libglvnd-devel acpid dkms
-# RUN dnf -y install kernel-headers:$(uname -r) kernel-devel:$(uname -r)
-# RUN dnf -y module install nvidia-driver:open-dkms
-# RUN dnf -y module reset nvidia-driver
-# RUN dnf -y module enable nvidia-driver:525-open
-# blacklist nouveau driver
-# RUN echo "blacklist nouveau" | tee /etc/modprobe.d/blacklist-nouveau.conf \
-#   && echo 'omit_drivers+=" nouveau "' | tee /etc/dracut.conf.d/blacklist-nouveau.conf \
-#   && dracut --regenerate-all --force \
-#   && depmod -a
-
+ENV CRYOSPARC_MASTER_DIR=${CRYOSPARC_ROOT_DIR}/cryosparc_master
 WORKDIR ${CRYOSPARC_MASTER_DIR}
 
 # cryosparc installation needs non-root user
@@ -93,7 +45,6 @@ ENV CRYOSPARC_MASTER_HOSTNAME=localhost
 
 RUN cat install.sh
 
-
 # --yes option means don't prompt user to answer questions
 RUN ./install.sh \
     --yes \
@@ -104,7 +55,7 @@ RUN ./install.sh \
     --disable_db_auth \
     --hostname "localhost" \
     --license $CRYOSPARC_LICENSE_ID \
-    --worker_path /${CRYOSPARC_ROOT_DIR}/cryosparc_worker \
+    --worker_path ${CRYOSPARC_ROOT_DIR}/cryosparc_worker \
     # --ssdpath /scratch/cryosparc_cache \
     --initial_email "cryosparc@bnl.gov" \
     --initial_password "Password123" \
@@ -115,20 +66,13 @@ RUN ./install.sh \
 
 RUN cat config.sh
 RUN env | sort
-#COPY entrypoint.bash /entrypoint.bash
-#COPY cryosparc.sh /cryosparc.sh
 
 COPY start_cryosparc.sh /start_cryosparc.sh
 RUN chmod 0755 /start_cryosparc.sh
 
-# manually place config.sh to force some settings
-#COPY config.sh $CRYOSPARC_MASTER_DIR/config.sh
-
 EXPOSE 39000 39001 39002 39003 39004 39006
 
 ENV PATH=$PATH:${CRYOSPARC_MASTER_DIR}/bin
-RUN echo PATH is ${PATH}
-
 
 ENTRYPOINT ["/start_cryosparc.sh"]
 # CMD ["cryosparcm", "start"]
